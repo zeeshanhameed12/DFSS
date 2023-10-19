@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"sort"
 	"time"
 
 	shell "github.com/ipfs/go-ipfs-api"
@@ -42,7 +43,7 @@ func sendFiletoPeer() {
 	encodingTime := time.Now()
 	dataShards, parityShards := 2, 4
 	encodedData, metadata, err := encodingData(data, dataShards, parityShards)
-	fmt.Println("Encoding time",time.Since(encodingTime))
+	fmt.Println("Encoding time", time.Since(encodingTime))
 	metadata.fileName = filePath
 	if err != nil {
 		log.Fatal(err)
@@ -51,26 +52,25 @@ func sendFiletoPeer() {
 	wList := []Workflow{
 		{fileSize: float32(size), CPU: ReqCPU, RAM: ReqRAM, Location: loc},
 	}
-	
-		
-	
-	
+
 	allResults := executePSO(wList, groupedNodes)
-	
-	
+
 	dist := time.Now()
 
 	var homeRegionNodes []NodeListWithCost
 	var homeRegionIndex int
 	var found bool
-
+	var listOfAllNodes []NodeListWithCost
 	// Find the home region
 	for i, region := range allResults {
+
+		listOfAllNodes = append(listOfAllNodes, region...)
+
 		if len(region) > 0 && region[0].location == loc {
 			homeRegionNodes = region
 			homeRegionIndex = i
 			found = true
-			break
+			//break
 		}
 	}
 
@@ -80,12 +80,18 @@ func sendFiletoPeer() {
 	}
 	totalShards := dataShards + parityShards
 	fmt.Println("Required number of nodes:", totalShards)
-	fmt.Println("Nodes in home region:", len(homeRegionNodes))
+	fmt.Printf("Nodes in home (%v) region: %v \n", loc, len(homeRegionNodes))
+
+	sort.Slice(listOfAllNodes, func(i, j int) bool {
+		return listOfAllNodes[i].cost < listOfAllNodes[j].cost
+	})
+
+	fmt.Println("all nodes////////:", listOfAllNodes)
 
 	if len(homeRegionNodes) >= totalShards {
 		// If the home region has enough nodes
 		distributeData(encodedData, homeRegionNodes, metadata, api)
-		fmt.Println("distribution time",time.Since(dist))
+		fmt.Println("Home region has enogh service providers.\n Distribution time ", time.Since(dist))
 		return
 	}
 
@@ -118,7 +124,7 @@ func sendFiletoPeer() {
 	}
 
 	distributeData(encodedData, selectedNodes, metadata, api)
-	fmt.Println("distribution time",time.Since(dist))
+	fmt.Println("Distribution time", time.Since(dist))
 
 }
 
