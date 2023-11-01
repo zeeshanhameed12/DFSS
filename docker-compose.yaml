@@ -1,0 +1,781 @@
+version: '3.4'
+
+# This is an example docker-compose file to quickly test an IPFS Cluster
+# with multiple peers on a contained environment.
+
+# It runs 3 cluster peers (cluster0, cluster1...) attached to go-ipfs daemons
+# (ipfs0, ipfs1...) using the CRDT consensus component. Cluster peers
+# autodiscover themselves using mDNS on the docker internal network.
+#
+# To interact with the cluster use "ipfs-cluster-ctl" (the cluster0 API port is
+# exposed to the locahost. You can also "docker exec -ti cluster0 sh" and run
+# it from the container. "ipfs-cluster-ctl peers ls" should show all 3 peers a few
+# seconds after start.
+#
+# For persistance, a "data" folder is created and used to store configurations
+# and states. This can be used to edit configurations in subsequent runs. It looks
+# as follows:
+#
+# data/
+# |-- cluster0
+# |-- cluster1
+# |-- ...
+# |-- ipfs0
+# |-- ipfs1
+# |-- ...
+#
+# During the first start, default configurations are created for all peers.
+
+services:
+
+  # cluster peer0
+
+  ipfs0:
+    container_name: ipfs0
+    image: ipfs/go-ipfs:release
+    ports:
+      - "4001:4001" # ipfs swarm - expose if needed/wanted
+      - "5001:5001" # ipfs api - expose if needed/wanted
+      - "8080:8080" # ipfs gateway - expose if needed/wanted
+    volumes:
+      - ./data/ipfs0:/data/ipfs
+
+  cluster0:
+    container_name: cluster0
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs0
+    environment:
+      CLUSTER_PEERNAME: cluster0
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f # From shell variable if set
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs0/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*' # Trust all peers in Cluster
+      CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS: /ip4/0.0.0.0/tcp/9094 # Expose API
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    ports:
+          # Open API port (allows ipfs-cluster-ctl usage on host)
+          - "9094:9094"
+          # The cluster swarm port would need  to be exposed if this container
+          # was to connect to cluster peers on other hosts.
+          # But this is just a testing cluster.
+          # - "9096:9096" # Cluster IPFS Proxy endpoint
+    volumes:
+      - ./data/cluster0:/data/ipfs-cluster
+
+
+  # cluster peer1
+
+  ipfs1:
+    container_name: ipfs1
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs1:/data/ipfs
+
+  cluster1:
+    container_name: cluster1
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs1
+    environment:
+      CLUSTER_PEERNAME: cluster1
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs1/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    volumes:
+      - ./data/cluster1:/data/ipfs-cluster
+
+
+  # cluster peer2
+
+  ipfs2:
+    container_name: ipfs2
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs2:/data/ipfs
+
+  cluster2:
+    container_name: cluster2
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs2
+    environment:
+      CLUSTER_PEERNAME: cluster2
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs2/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    volumes:
+      - ./data/cluster2:/data/ipfs-cluster
+
+
+  # cluster peer3
+
+  ipfs3:
+    container_name: ipfs3
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs3:/data/ipfs
+
+  cluster3:
+    container_name: cluster3
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs3
+    environment:
+      CLUSTER_PEERNAME: cluster3
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs3/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster3:/data/ipfs-cluster
+  
+  # cluster peer4
+
+  ipfs4:
+    container_name: ipfs4
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs4:/data/ipfs
+
+  cluster4:
+    container_name: cluster4
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs4
+    environment:
+      CLUSTER_PEERNAME: cluster4
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs4/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster4:/data/ipfs-cluster
+
+ # cluster peer5
+
+  ipfs5:
+    container_name: ipfs5
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs5:/data/ipfs
+
+  cluster5:
+    container_name: cluster5
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs5
+    environment:
+      CLUSTER_PEERNAME: cluster5
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs5/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+      CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS: /ip4/0.0.0.0/tcp/9098 # Expose API
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    ports:
+          # Open API port (allows ipfs-cluster-ctl usage on host)
+          - "9098:9098"
+    volumes:
+      - ./data/cluster5:/data/ipfs-cluster
+  
+  # cluster peer6
+
+  ipfs6:
+    container_name: ipfs6
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs6:/data/ipfs
+
+  cluster6:
+    container_name: cluster6
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs6
+    environment:
+      CLUSTER_PEERNAME: cluster6
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs6/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discover
+    volumes:
+      - ./data/cluster6:/data/ipfs-cluster
+
+  # cluster peer7
+
+  ipfs7:
+    container_name: ipfs7
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs7:/data/ipfs
+
+  cluster7:
+    container_name: cluster7
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs7
+    environment:
+      CLUSTER_PEERNAME: cluster7
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs7/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster7:/data/ipfs-cluster
+  
+  # cluster peer8
+
+  ipfs8:
+    container_name: ipfs8
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs8:/data/ipfs
+
+  cluster8:
+    container_name: cluster8
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs8
+    environment:
+      CLUSTER_PEERNAME: cluster8
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs8/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster8:/data/ipfs-cluster
+
+  # cluster peer9
+
+  ipfs9:
+    container_name: ipfs9
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs9:/data/ipfs
+
+  cluster9:
+    container_name: cluster9
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs9
+    environment:
+      CLUSTER_PEERNAME: cluster9
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs9/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster9:/data/ipfs-cluster
+
+  # cluster peer10
+
+  ipfs10:
+    container_name: ipfs10
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs10:/data/ipfs
+
+  cluster10:
+    container_name: cluster10
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs10
+    environment:
+      CLUSTER_PEERNAME: cluster10
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs10/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster10:/data/ipfs-cluster
+
+  # cluster peer11
+
+  ipfs11:
+    container_name: ipfs11
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs11:/data/ipfs
+
+  cluster11:
+    container_name: cluster11
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs11
+    environment:
+      CLUSTER_PEERNAME: cluster11
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs11/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+      CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS: /ip4/0.0.0.0/tcp/9099 # Expose API
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    ports:
+          # Open API port (allows ipfs-cluster-ctl usage on host)
+          - "9099:9099"
+    volumes:
+      - ./data/cluster11:/data/ipfs-cluster
+  # cluster peer12
+
+  ipfs12:
+    container_name: ipfs12
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs12:/data/ipfs
+
+  cluster12:
+    container_name: cluster12
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs12
+    environment:
+      CLUSTER_PEERNAME: cluster12
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs12/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster12:/data/ipfs-cluster
+
+  # cluster peer13
+
+  ipfs13:
+    container_name: ipfs13
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs13:/data/ipfs
+
+  cluster13:
+    container_name: cluster13
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs13
+    environment:
+      CLUSTER_PEERNAME: cluster13
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs13/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster13:/data/ipfs-cluster
+
+  # cluster peer14
+  ipfs14:
+    container_name: ipfs14
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs14:/data/ipfs
+
+  cluster14:
+    container_name: cluster14
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs14
+    environment:
+      CLUSTER_PEERNAME: cluster14
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs14/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster14:/data/ipfs-cluster
+
+  # cluster peer15
+  ipfs15:
+    container_name: ipfs15
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs15:/data/ipfs
+
+  cluster15:
+    container_name: cluster15
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs15
+    environment:
+      CLUSTER_PEERNAME: cluster15
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs15/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster15:/data/ipfs-cluster
+  
+  # cluster peer16
+  ipfs16:
+    container_name: ipfs16
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs16:/data/ipfs
+
+  cluster16:
+    container_name: cluster16
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs16
+    environment:
+      CLUSTER_PEERNAME: cluster16
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs16/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster16:/data/ipfs-cluster
+
+  # cluster peer17
+  ipfs17:
+    container_name: ipfs17
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs17:/data/ipfs
+
+  cluster17:
+    container_name: cluster17
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs17
+    environment:
+      CLUSTER_PEERNAME: cluster17
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs17/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster17:/data/ipfs-cluster
+
+  # cluster peer18
+  ipfs18:
+    container_name: ipfs18
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs18:/data/ipfs
+
+  cluster18:
+    container_name: cluster18
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs18
+    environment:
+      CLUSTER_PEERNAME: cluster18
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs18/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster18:/data/ipfs-cluster
+
+  # cluster peer19
+  ipfs19:
+    container_name: ipfs19
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs19:/data/ipfs
+
+  cluster19:
+    container_name: cluster19
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs19
+    environment:
+      CLUSTER_PEERNAME: cluster19
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs19/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster19:/data/ipfs-cluster
+
+  # cluster peer20
+  ipfs20:
+    container_name: ipfs20
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs20:/data/ipfs
+
+  cluster20:
+    container_name: cluster20
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs20
+    environment:
+      CLUSTER_PEERNAME: cluster20
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs20/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster20:/data/ipfs-cluster
+
+  # cluster peer21
+  ipfs21:
+    container_name: ipfs21
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs21:/data/ipfs
+
+  cluster21:
+    container_name: cluster21
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs21
+    environment:
+      CLUSTER_PEERNAME: cluster21
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs21/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster21:/data/ipfs-cluster
+
+  # cluster peer22
+  ipfs22:
+    container_name: ipfs22
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs22:/data/ipfs
+
+  cluster22:
+    container_name: cluster22
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs22
+    environment:
+      CLUSTER_PEERNAME: cluster22
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs22/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster22:/data/ipfs-cluster
+
+  # cluster peer23
+  ipfs23:
+    container_name: ipfs23
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs23:/data/ipfs
+
+  cluster23:
+    container_name: cluster23
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs23
+    environment:
+      CLUSTER_PEERNAME: cluster23
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs23/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster23:/data/ipfs-cluster
+ 
+
+  # cluster peer24
+  ipfs24:
+    container_name: ipfs24
+    image: ipfs/go-ipfs:release
+    volumes:
+      - ./data/ipfs24:/data/ipfs
+
+  cluster24:
+    container_name: cluster24
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs24
+    environment:
+      CLUSTER_PEERNAME: cluster24
+      CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs24/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+    volumes:
+      - ./data/cluster24:/data/ipfs-cluster
+
+
+  # # cluster peer25
+  # ipfs25:
+  #   container_name: ipfs25
+  #   image: ipfs/go-ipfs:release
+  #   volumes:
+  #     - ./data/ipfs25:/data/ipfs
+
+  # cluster25:
+  #   container_name: cluster25
+  #   image: ipfs/ipfs-cluster:latest
+  #   depends_on:
+  #     - ipfs25
+  #   environment:
+  #     CLUSTER_PEERNAME: cluster25
+  #     CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+  #     CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs25/tcp/5001
+  #     CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+  #     CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+  #   volumes:
+  #     - ./data/cluster25:/data/ipfs-cluster
+
+  # # cluster peer26
+  # ipfs26:
+  #   container_name: ipfs26
+  #   image: ipfs/go-ipfs:release
+  #   volumes:
+  #     - ./data/ipfs26:/data/ipfs
+
+  # cluster26:
+  #   container_name: cluster26
+  #   image: ipfs/ipfs-cluster:latest
+  #   depends_on:
+  #     - ipfs26
+  #   environment:
+  #     CLUSTER_PEERNAME: cluster26
+  #     CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+  #     CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs26/tcp/5001
+  #     CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+  #     CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+  #   volumes:
+  #     - ./data/cluster26:/data/ipfs-cluster
+
+  # # cluster peer27
+  # ipfs27:
+  #   container_name: ipfs27
+  #   image: ipfs/go-ipfs:release
+  #   volumes:
+  #     - ./data/ipfs27:/data/ipfs
+
+  # cluster27:
+  #   container_name: cluster27
+  #   image: ipfs/ipfs-cluster:latest
+  #   depends_on:
+  #     - ipfs27
+  #   environment:
+  #     CLUSTER_PEERNAME: cluster27
+  #     CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+  #     CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs27/tcp/5001
+  #     CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+  #     CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+  #   volumes:
+  #     - ./data/cluster27:/data/ipfs-cluster
+
+  # # cluster peer28
+  # ipfs28:
+  #   container_name: ipfs28
+  #   image: ipfs/go-ipfs:release
+  #   volumes:
+  #     - ./data/ipfs28:/data/ipfs
+
+  # cluster28:
+  #   container_name: cluster28
+  #   image: ipfs/ipfs-cluster:latest
+  #   depends_on:
+  #     - ipfs28
+  #   environment:
+  #     CLUSTER_PEERNAME: cluster28
+  #     CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+  #     CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs28/tcp/5001
+  #     CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+  #     CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+  #   volumes:
+  #     - ./data/cluster28:/data/ipfs-cluster
+
+  # # cluster peer29
+  # ipfs29:
+  #   container_name: ipfs29
+  #   image: ipfs/go-ipfs:release
+  #   volumes:
+  #     - ./data/ipfs29:/data/ipfs
+
+  # cluster29:
+  #   container_name: cluster29
+  #   image: ipfs/ipfs-cluster:latest
+  #   depends_on:
+  #     - ipfs29
+  #   environment:
+  #     CLUSTER_PEERNAME: cluster29
+  #     CLUSTER_SECRET: f5cd39fc1145a3efadb3fc36ad36c9279fe34fe1e6e289ee7b5be79615dccd6f
+
+  #     CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs29/tcp/5001
+  #     CLUSTER_CRDT_TRUSTEDPEERS: '*'
+
+  #     CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+    
+  #   volumes:
+  #     - ./data/cluster29:/data/ipfs-cluster
+networks:
+  default:
+    external:
+      name: ipfs-cluster-network
+

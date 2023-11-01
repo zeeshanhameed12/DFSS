@@ -153,8 +153,10 @@ func executePSO(wList []Workflow, nodes [][]listOfPeer) [][]NodeListWithCost {
 	}()
 	fmt.Println("PSO execution time :", time.Since(dist))
 	var allResults [][]NodeListWithCost
+	
 	for result := range results {
 		allResults = append(allResults, result...)
+	
 	}
 
 	return allResults

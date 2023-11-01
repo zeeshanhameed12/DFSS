@@ -169,7 +169,7 @@ func LoadMetadata(file string) (*Metadata, error) {
 	return metadata, nil
 }
 
-func apiHandle(fileHash string, topPeer string) (*http.Response, error) {
+func apiHandle(fileHash string, topPeer string, replica string) (*http.Response, error) {
 	addresses := []string{
 		"http://127.0.0.1:9094",
 		"http://127.0.0.1:9098",
@@ -178,7 +178,7 @@ func apiHandle(fileHash string, topPeer string) (*http.Response, error) {
 
 	var lastError error
 	for _, address := range addresses {
-		url := fmt.Sprintf("%s/pins/ipfs/%s?mode=recursive&name=&replication-max=1&replication-min=1&shard-size=0&user-allocations=%s", address, fileHash, topPeer)
+		url := fmt.Sprintf("%s/pins/ipfs/%s?mode=recursive&name=&replication-max=2&replication-min=2&shard-size=0&user-allocations=%s,%s", address, fileHash, topPeer, replica)
 		response, err := http.Post(url, "application/json", nil)
 		if err != nil {
 			lastError = fmt.Errorf("API %s is not responding: %w", address, err)
@@ -217,7 +217,7 @@ func apiHandle(fileHash string, topPeer string) (*http.Response, error) {
 
 //		return fileInfo.Size(), nil
 //	}
-func distributeData(encodedData [][]byte, allResults []NodeListWithCost, metadata *Metadata, api *shell.Shell) {
+func distributeData(encodedData [][]byte, allResults []NodeListWithCost, globalBest []NodeListWithCost, metadata *Metadata, api *shell.Shell) {
 	var wg sync.WaitGroup
 	for i, data := range encodedData {
 		wg.Add(1)
@@ -232,7 +232,8 @@ func distributeData(encodedData [][]byte, allResults []NodeListWithCost, metadat
 			}
 
 			topPeer := allResults[i].peer
-			response, err := apiHandle(fileHash, topPeer)
+			replica := globalBest[i].peer
+			response, err := apiHandle(fileHash, topPeer, replica)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -243,6 +244,9 @@ func distributeData(encodedData [][]byte, allResults []NodeListWithCost, metadat
 			// fmt.Println("########Sending########")
 			// fmt.Printf("Storage Node:%v\nNode Region: %v\nChunk hash:%v\nChunk size:%v\nData Transfer time(Elapsed time for sending file to suitable Node):%v\n", topPeer, loc, fileHash, size, time.Since(start))
 			// fmt.Println("########Sent########")
+			fmt.Println("########Sending########")
+			fmt.Printf("Storage Node:%v  "+"%v"+"\nGlobal: %v\nChunk hash:%v\n", topPeer, allResults[i].location, replica, fileHash)
+			fmt.Println("########Sent########")
 		}(data, i)
 	}
 	wg.Wait()

@@ -16,12 +16,13 @@ func sendFiletoPeer() {
 	var filePath string
 	var ReqCPU, ReqRAM int
 	var loc string
-	fmt.Println("Enter full path of the file you want to save:")
-	fmt.Scan(&filePath)
+
 	fmt.Println("Enter Required RAM:")
 	fmt.Scan(&ReqRAM)
 	fmt.Println("Enter Required CPU:")
 	fmt.Scan(&ReqCPU)
+	fmt.Println("Enter full path of the file you want to save:")
+	fmt.Scan(&filePath)
 	fmt.Println("Enter the region e.g. Europe,Asia...:")
 	fmt.Scan(&loc)
 	// fmt.Printf("File size: %d bytes\n", fileSize)
@@ -41,7 +42,7 @@ func sendFiletoPeer() {
 	// fmt.Println(Af_Nodes)
 
 	encodingTime := time.Now()
-	dataShards, parityShards := 2, 4
+	dataShards, parityShards := 4, 2
 	encodedData, metadata, err := encodingData(data, dataShards, parityShards)
 	fmt.Println("Encoding time", time.Since(encodingTime))
 	metadata.fileName = filePath
@@ -86,11 +87,28 @@ func sendFiletoPeer() {
 		return listOfAllNodes[i].cost < listOfAllNodes[j].cost
 	})
 
-	fmt.Println("all nodes////////:", listOfAllNodes)
-
+	//fmt.Println("all nodes////////:", listOfAllNodes)
+	selectedMap := make(map[string]bool)
 	if len(homeRegionNodes) >= totalShards {
-		// If the home region has enough nodes
-		distributeData(encodedData, homeRegionNodes, metadata, api)
+		//If the home region has enough nodes
+
+		//Finding the remaining nodes other that those to whome we have sent the chunks
+		for _, node := range homeRegionNodes {
+			selectedMap[node.peer] = true
+		}
+		var remainingNodes []NodeListWithCost
+		for _, node := range listOfAllNodes {
+			if _, exists := selectedMap[node.peer]; !exists {
+				remainingNodes = append(remainingNodes, node)
+			}
+		}
+
+		// fmt.Println("Global nodes excluding home region nodes:", remainingNodes)
+		// fmt.Println(" distributing to the global best nodes:")
+		// distributeData(encodedData, remainingNodes, metadata, api)
+		// fmt.Println("Distribution time", time.Since(dist))
+		fmt.Println("Home region nodes:", homeRegionNodes)
+		distributeData(encodedData, homeRegionNodes, remainingNodes, metadata, api)
 		fmt.Println("Home region has enogh service providers.\n Distribution time ", time.Since(dist))
 		return
 	}
@@ -123,7 +141,19 @@ func sendFiletoPeer() {
 		}
 	}
 
-	distributeData(encodedData, selectedNodes, metadata, api)
+	//selectedMap := make(map[string]bool)
+	for _, node := range selectedNodes {
+		selectedMap[node.peer] = true
+	}
+	var remainingNodes []NodeListWithCost
+	for _, node := range listOfAllNodes {
+		if _, exists := selectedMap[node.peer]; !exists {
+			remainingNodes = append(remainingNodes, node)
+		}
+	}
+	//distributeData(encodedData, selectedNodes, metadata, api)
+	fmt.Println(" distributing to global best nodes:")
+	distributeData(encodedData, selectedNodes, remainingNodes, metadata, api)
 	fmt.Println("Distribution time", time.Since(dist))
 
 }

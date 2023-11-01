@@ -62,116 +62,140 @@ func getInfo(response *http.Response) []listOfPeer {
 
 		// Arbitarary assign CPU to nodes
 
-		if peerlist.peer == "12D3KooWBLipb6inEBvJxUo3gAaDrS1trVZHzwgetN9ZvYc4Cmvv" {
+		if peerlist.peer == "12D3KooWABUagR9bzQhLzPj21fx9zCnKEoCvJVZcm9VbKMjSHz6h" {
 			peerlist.CPU = 9
 			peerlist.RAM = 128
 			peerlist.Location = "Asia"
 
 		}
-		if peerlist.peer == "12D3KooWBTqj5VBqJj7Vq1oKULigDieWwkm4V9BzFMgpx5eomWPs" {
+		if peerlist.peer == "12D3KooWAJNg7iYXNabxGgMYbQjSWuYUHoKPoYiL5QGYSDRyeQ3W" {
 			peerlist.CPU = 8
 
 			peerlist.RAM = 16
 			peerlist.Location = "Asia"
 
 		}
-		if peerlist.peer == "12D3KooWC8Mz4D8JZospKscbkdS7SrzH28p9TLL1s78tg4Py4jdo" {
+		if peerlist.peer == "12D3KooWAh9bEeHPUuUx3EbdKEzyxNRtWtkeWEUhG1d98MUtpb5X" {
 			peerlist.CPU = 8
 
 			peerlist.RAM = 32
 			peerlist.Location = "Asia"
 
 		}
-		if peerlist.peer == "12D3KooWDc2VfXXwq37ozZZJUkiQSw6cN31xoFkKp8H8PPqS2VDm" {
+		if peerlist.peer == "12D3KooWBKYmsvV3JPjZzujmEaDGjZgebKyDWXnt3vwpELobA3Pd" {
 			peerlist.CPU = 11
 			peerlist.RAM = 64
 			peerlist.Location = "Asia"
 
 		}
-		if peerlist.peer == "12D3KooWFUHPdKo4F9upQMN1vawfPP3iFxZvv8wFvAUBVfwGuncw" {
+		if peerlist.peer == "12D3KooWCduUwcqYZBQEK9uVZ8jrS63R6UeF1JuiW2WkkbqgLCZ7" {
 			peerlist.CPU = 7
 			peerlist.RAM = 128
 			peerlist.Location = "Asia"
 
 		}
-		if peerlist.peer == "12D3KooWHAuHTH2iNrPEYnAS3HE6fY1H22D99nfE5Vg37XbWoatw" {
+		if peerlist.peer == "12D3KooWE2AXWhk3eBMy4CEtvSZro9RkToGMmLH1YXYbk9uRoCq2" {
 			peerlist.CPU = 9
 			peerlist.RAM = 16
-			peerlist.Location = "Asia"
+			peerlist.Location = "Europe"
 
 		}
-		if peerlist.peer == "12D3KooWJvdiBS1c5s66hrM7Uhm2bcUKGyXvtNjmC6hWcrj2cQeL" {
+		if peerlist.peer == "12D3KooWFuVghmRqxtm8oK4VPYJ48uv27THuyxbZiXQh4kHcf7SK" {
 			peerlist.CPU = 9
 			peerlist.RAM = 256
 			peerlist.Location = "Europe"
 
 		}
-		if peerlist.peer == "12D3KooWL93L4yUu5gQJJgVadx9ZjyWFXeN3qPkuTMCc51fqs6GR" {
+		if peerlist.peer == "12D3KooWK7Xd92XUaAkuEPmoQ7mmfVbh2gWKkURdmgS5zHvRBKJ5" {
 			peerlist.CPU = 8
 			peerlist.RAM = 128
 			peerlist.Location = "Europe"
 
 		}
-		if peerlist.peer == "12D3KooWLabiNXQ3K2CCTjo4GWUsQ6zsYCfAo3HD22zGWKQNmMc4" {
+		if peerlist.peer == "12D3KooWKG5zVDvoJP1KD2mTKaFw29tYSzwxxZpz9XGaJLsEbuyx" {
 			peerlist.CPU = 11
 			peerlist.RAM = 64
 			peerlist.Location = "Europe"
 
 		}
-		if peerlist.peer == "12D3KooWMBdBfbt1WofCvan7W4DzqWF4FhLNYLWsci2tCXaZQ2xQ" {
+		if peerlist.peer == "12D3KooWLjbzzH1ar9gcxjAR2e9DyvCgZmtbuhsy8yL9GvL4R7bq" {
 			peerlist.CPU = 11
 			peerlist.RAM = 256
 			peerlist.Location = "Europe"
 
 		}
-		if peerlist.peer == "12D3KooWMJByo59nsjioH7wFZYczQq4QRdSdgVhbAjJtvcQ8hLUz" {
+		if peerlist.peer == "12D3KooWLxnnQM2Ln2huEt5p2NEoVvsZw7witfhsNkHUSZxBb3NF" {
 			peerlist.CPU = 11
 			peerlist.RAM = 120
-			peerlist.Location = "Europe"
+			peerlist.Location = "Africa"
 
 		}
-		if peerlist.peer == "12D3KooWMZd75CY76mrv3dwyj3QTDa7MnrR1CmwdwHh4paTY9gV7" {
+		if peerlist.peer == "12D3KooWMB4E9RtMRiXxdrLf8sy9KrnVDdzLLMkYxeUADnfVYH6f" {
 			peerlist.CPU = 11
 			peerlist.RAM = 64
-			peerlist.Location = "Europe"
+			peerlist.Location = "Africa"
 
 		}
-		if peerlist.peer == "12D3KooWMfbVmNdZuNubD2wsczxD9Dn7vL6bqTTWu9yJ5ZZmrtb6" {
+		if peerlist.peer == "12D3KooWN7XXQ7BVYCDa439uLRE1NTvekwoRzouAgysQfn3qdE17" {
 			peerlist.CPU = 11
 			peerlist.RAM = 80
 			peerlist.Location = "Africa"
 
 		}
-		if peerlist.peer == "12D3KooWNVcwuNdV49dBVYos8L41eBdRkesxGtuXeRLc1dPoeYXs" {
+		if peerlist.peer == "12D3KooWRXtjozGvAFeA8JSMdJ26Ei9i2kYSNZK37mp3QwZ8R4io" {
 			peerlist.CPU = 11
 			peerlist.RAM = 110
 			peerlist.Location = "Africa"
 
 		}
-		if peerlist.peer == "12D3KooWNqR83enQHokNikRq1ynUgFgbUcYWTnhWaQ19jAmHw5TH" {
+		if peerlist.peer == "12D3KooWSc6HTGXPzM3qYgHYsuu7BE9NgZqHJnnmyQsYBysW2cHF" {
 			peerlist.CPU = 11
 			peerlist.RAM = 110
 			peerlist.Location = "Africa"
 
 		}
-		if peerlist.peer == "12D3KooWPTVcLBjZH2RS8TYm393E1kxR39DJYuLWxebtpTFyV6Z1" {
-			peerlist.CPU = 11
-			peerlist.RAM = 110
-			peerlist.Location = "Africa"
+		// if peerlist.peer == "12D3KooWNAtW79NsLAGQK6UmnPL3TbiVP5SVQWTdjBUDmCnVpbMj" {
+		// 	peerlist.CPU = 11
+		// 	peerlist.RAM = 110
+		// 	peerlist.Location = "Africa"
 
-		}
-		if peerlist.peer == "12D3KooWPmM7PHSobUrBCV9wXbn4UPUL4Bj1HuyMf9LFRmNnCYUH" {
-			peerlist.CPU = 11
-			peerlist.RAM = 110
-			peerlist.Location = "Africa"
+		// }
+		// if peerlist.peer == "12D3KooWPhCAgpjrmUwqFnCxkVTwdoRFuQVH6vpgott1BSXcHdB9" {
+		// 	peerlist.CPU = 11
+		// 	peerlist.RAM = 110
+		// 	peerlist.Location = "Africa"
 
-		}
-		if peerlist.peer == "12D3KooWSy6eZ1v7YDUbgWbfwhMhdaLKa6szKUUrS8RrpATFH2hT" {
-			peerlist.CPU = 11
-			peerlist.RAM = 110
-			peerlist.Location = "Africa"
+		// }
+		// if peerlist.peer == "12D3KooWQ9P7GPHCbN1Xx6669KSXw6TT77J6ewfdDcPEsah6NbFo" {
+		// 	peerlist.CPU = 11
+		// 	peerlist.RAM = 110
+		// 	peerlist.Location = "Africa"
 
-		}
+		// }
+		// if peerlist.peer == "12D3KooWQfd8r78DTBEagXkkhs6gS2ajVQRU8i56vQPmeAax4tyn" {
+		// 	peerlist.CPU = 11
+		// 	peerlist.RAM = 110
+		// 	peerlist.Location = "Africa"
+
+		// }
+		// if peerlist.peer == "12D3KooWRUMd9PxeDX3mMRViJvciDdkyWbGCKC84w46AEJF9kqeB" {
+		// 	peerlist.CPU = 11
+		// 	peerlist.RAM = 110
+		// 	peerlist.Location = "Africa"
+
+		// }
+		// if peerlist.peer == "12D3KooWSjC8TCtzaQVLWCdqf1QWgcmywAtvCZ4w8oD9G8qb3RVg" {
+		// 	peerlist.CPU = 11
+		// 	peerlist.RAM = 110
+		// 	peerlist.Location = "Africa"
+
+		// }
+		// if peerlist.peer == "12D3KooWSy6eZ1v7YDUbgWbfwhMhdaLKa6szKUUrS8RrpATFH2hT" {
+		// 	peerlist.CPU = 11
+		// 	peerlist.RAM = 110
+		// 	peerlist.Location = "Africa"
+
+		// }
 
 		data = append(data, peerlist)
 		//fmt.Println("All the Nodes with availabale free disk space")
